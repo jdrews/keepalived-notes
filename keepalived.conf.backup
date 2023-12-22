@@ -1,0 +1,38 @@
+global_defs {
+    enable_script_security # Security measure to ensure non-root users cannot modify a vrrp_script, inadvertently allowing for root actions as keepalived runs in root.
+}
+
+vrrp_script check_api {
+    script "/etc/keepalived/check_api.sh"
+    interval 5  # seconds between script invocation
+
+    # state change time interval is interval * (fall or rise)
+        # e.g. interval 5s * fall 3 = 15 sec to trigger a failure/KO state
+    fall 3      # required number of successes for KO transition
+    rise 3      # required number of successes for OK transition
+}
+
+vrrp_instance VI_1 {
+    interface eth0  # Interface to use for sync (VRRP)
+    state BACKUP    # Default startup state
+    priority 100    # Higher number will win elections for master. Recommend uniqueness
+
+    # unicast_src_ip <ip> # Only needed if your interface has more than one IP. Defaults to primary IP of interface
+    unicast_peer {
+        192.168.1.46 # IP of the other nodes
+    }
+
+    # nopreempt             # Uncomment this to stop fail backs when a node returns
+
+    virtual_router_id 25    # Must be the same across all nodes. Identifies VRRP
+    virtual_ipaddress {     # Floating IP
+        192.168.1.50
+    }
+
+    track_script {          # Check the API to see if it's up
+        check_api
+    }
+
+    notify "/etc/keepalived/handle_state_change.sh" # Perform actions upon state change
+
+}
