@@ -22,7 +22,11 @@ keepalived works on many linux versions. In this guide we will be installing on 
 
 
 ## Install keepalived
-Install keepalived on all nodes
+Install keepalived on all nodes.
+```
+yum install keepalived
+```
+The scripts for this setup use `curl` to check a REST API. If you don't have `curl` install it.
 ```
 yum install keepalived
 ```
@@ -54,7 +58,7 @@ useradd -r -s /sbin/nologin -g keepalived_script -M keepalived_script
 ```
 
 ### Determine IPs
-Determine what your servers IPs are and what the floating IPs are and which one is master/primary. For this setup
+Determine what your servers IPs are and what the floating IPs are and which one is master/primary. For this setup:
 
 - Server A: 192.168.1.46 (master/primary)
 - Server B: 192.168.1.47 (backup)
@@ -66,14 +70,14 @@ For this test both servers are using `eth0`.
 In production you may have a dedicated network for HA with it's own interfaces. This is recommended but not required.
 
 ##  Load Scripts and Configs
-Add the following files to `/etc/keepalived/` for all servers
+Add the following files to `/etc/keepalived/` for all servers.
 * keepalived.conf
     * [keepalived.conf.master](keepalived.conf.master)
     * [keepalived.conf.backup](keepalived.conf.backup)
 * [check_api.sh](check_api.sh)
 * [handle_state_change.sh](handle_state_change.sh)
 
-Make the two scripts executable by running 
+Make the two scripts executable by running: 
 ```
 chmod +x /etc/keepalived/check_api.sh
 chmod +x /etc/keepalived/handle_state_change.sh
@@ -87,18 +91,18 @@ touch /var/log/keepalived_state.log
 chown keepalived_script:keepalived_script /var/log/keepalived_state.log
 ```
 
-Test that the configs are working with 
+Test that the configs are working with: 
 ```
 keepalived --config-test
 ```
 
 ## Start Cluster
-Keepalived logs to syslog/messages. Tail it before starting
+Keepalived logs to syslog/messages. Tail it before starting.
 ```
 tail -f /var/log/messages
 ```
 
-Enable and Start keepalived by running 
+Enable and Start keepalived by running:
 ```
 systemctl enable keepalived
 systemctl start keepalived
@@ -116,7 +120,7 @@ Take a look at your interface to see when the floating IP is present, indicating
 ip a
 ```
 
-Systemctl can also tell you the status of keepalived
+Systemctl can also tell you the status of keepalived.
 ```
 systemctl status keepalived
 ```
@@ -130,11 +134,11 @@ To get the statistics data run the following:
 ```
 kill -s $(keepalived --signum=DATA) $(cat /run/keepalived.pid); cat /tmp/keepalived.data
 ```
-This returns a ton of data, which you can filter/grep across. To get the current state of a server/node run
+This returns a ton of data, which you can filter/grep across. To get the current state of a server/node run:
 ```
 kill -s $(keepalived --signum=DATA) $(cat /run/keepalived.pid); cat /tmp/keepalived.data | grep State
 ```
-Which returns 
+Which returns:
 ```
 State = BACKUP
 ```
@@ -146,7 +150,7 @@ Sending `USR2` signal to keepalived writes statistics to /tmp/keepalived.stats. 
  kill -s $(keepalived --signum=STATS) $(cat /run/keepalived.pid); cat /tmp/k
 eepalived.stats
 ```
-Which returns 
+Which returns: 
 ```
 VRRP Instance: VI_1
   Advertisements:
@@ -169,7 +173,7 @@ VRRP Instance: VI_1
     Sent: 1
 ```
 
-You can reset these stats with 
+You can reset these stats with: 
 ```
 kill -s $(keepalived --signum=STATS_CLEAR) $(cat /run/keepalived.pid)
 ```
