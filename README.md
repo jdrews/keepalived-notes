@@ -6,7 +6,7 @@ https://github.com/acassen/keepalived
 
 
 This guide will setup a 2 node cluster with a floating IP (also known as a Virtual IP or VIP) and will watchdog a service via REST and perform an action up on failover via REST as well. 
-> You can setup a 3 node cluster with 1 MASTER and 2 BACKUPs following the same guide. Just add another BACKUP and update the `unicast_peers`. 
+> You can setup a 3 node cluster with 1 MASTER and 2 BACKUPs following the same guide. Just add another BACKUP and update the `unicast_peers`. The same goes for a 4+ node cluster. 
 
 > This guide assumes there is a web server at http://localhost:80 that will be health checked via HTTP GET. Run something like nginx to test this. 
 
