@@ -28,7 +28,7 @@ yum install keepalived
 ```
 The scripts for this setup use `curl` to check a REST API. If you don't have `curl` install it.
 ```
-yum install keepalived
+yum install curl
 ```
 
 ### Optional extras 
